@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Livros</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header>
+    <h1 class="logo">📚 SmartLib</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="funcionario.html">Sou Funcionário</a></li>
+        <li><a href="cadastro-livros.html">Cadastrar Livros</a></li>
+      </ul>
+    </nav>
+    <div class="search-login">
+      <div class="user-info" id="user-info">
+        <!-- Preenchido via JS -->
+      </div>
+    </div>
+  </header>
+
+  <main class="pagina-cadastro">
+    <section>
+      <h2>Cadastrar Novo Livro</h2>
+      <form>
+        <label>ISBN:
+          <input type="text" name="isbn" id="isbn" maxlength="13" pattern="\d{13}" required>
+        </label>
+        <p id="status-isbn" style="color: #0077b6; font-weight: bold; display: none;">
+          Carregando ISBN...
+        </p>
+
+        <label>Título:
+          <input type="text" name="titulo" id="titulo" required readonly>
+        </label>
+        <label>Autor:
+          <input type="text" name="autor" id="autor" required readonly>
+        </label>
+        <label>Gênero:
+          <input type="text" name="genero" id="genero" readonly>
+        </label>
+        <label>Ano:
+          <input type="number" name="ano" id="ano" readonly>
+        </label>
+
+        <label>Imagem:
+          <img id="livro-imagem" src="" alt="Capa do livro"
+               style="max-width: 150px; margin-top: 10px; display: none;" />
+          <button type="button" id="remover-imagem" class="remover-btn"
+                  style="display: none;">Remover Imagem</button>
+        </label>
+
+        <label>Carregar Imagem:
+          <input type="file" id="input-imagem" accept="image/*" />
+          <div id="imagem-preview"></div>
+          <button type="button" id="remover-preview" class="remover-btn"
+                  style="display: none;">Remover Imagem Manual</button>
+        </label>
+
+        <div class="acoes-cadastro">
+          <button type="button" class="voltar" onclick="history.back()">
+            ⬅️ Voltar
+          </button>
+          <button type="submit">📚 Cadastrar</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Preview de imagem manual
+    const inputImagem = document.getElementById('input-imagem');
+    const previewImg = document.getElementById('imagem-preview');
+
+    inputImagem.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.innerHTML = `<img src="${e.target.result}" style="max-width:150px;" />`;
+          document.getElementById('remover-preview').style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('remover-preview').addEventListener('click', () => {
+      previewImg.innerHTML = '';
+      document.getElementById('remover-preview').style.display = 'none';
+      inputImagem.value = '';
+    });
+
+    // Lidar com imagem via ISBN
+    const btnRemoverImagem = document.getElementById('remover-imagem');
+    const imgLivro = document.getElementById('livro-imagem');
+
+    function mostrarRemoverImagem() {
+      btnRemoverImagem.style.display = 'inline-block';
+    }
+
+    btnRemoverImagem.addEventListener('click', () => {
+      imgLivro.src = '';
+      imgLivro.style.display = 'none';
+      btnRemoverImagem.style.display = 'none';
+    });
+
+    function definirImagemLivro(url) {
+      imgLivro.src = url;
+      imgLivro.style.display = 'block';
+      mostrarRemoverImagem();
+    }
+  </script>
+
+  <script>
+    // Menu de usuário e logout
+    document.addEventListener("DOMContentLoaded", () => {
+      const usuario = JSON.parse(localStorage.getItem("smartlib_usuario"));
+      const userInfo = document.getElementById("user-info");
+      
+
+      if (usuario && userInfo) {
+        const fotoSalva = localStorage.getItem("smartlib_fotoPerfil");
+        userInfo.innerHTML = `
+          <img src="${fotoSalva || "https://i.pravatar.cc/150?u=" + usuario.usuario}"
+               alt="Foto do usuário" id="foto-perfil" />
+          <span>${usuario.tipo.charAt(0).toUpperCase() + usuario.tipo.slice(1)}</span>
+          <div class="menu-dropdown" id="menu-dropdown">
+            <button onclick="logout()">🚪 Sair</button>
+            <label style="font-size: 0.9em; color: gray;">📷 Mudar Foto
+              <input type="file" id="input-foto-perfil" accept="image/*" style="display: none;">
+            </label>
+          </div>
+        `;
+
+        userInfo.addEventListener("click", () => {
+          const menu = document.getElementById("menu-dropdown");
+          menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+        });
+
+        document.getElementById("input-foto-perfil").addEventListener("change", e => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = event => {
+            localStorage.setItem("smartlib_fotoPerfil", event.target.result);
+            document.getElementById("foto-perfil").src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+
+    // Verificação de permissão
+    const usuario = JSON.parse(localStorage.getItem("smartlib_usuario"));
+  if (!usuario || usuario.tipo !== "funcionario") {
+    document.body.innerHTML = `
+  <section class="mensagem-permissao">
+    <h2>🔒 Acesso restrito</h2>
+    <p>Você não tem permissão para acessar essa área da SmartLib. Apenas funcionários podem acessar esta seção.</p>
+    <div class="botoes-permissao">
+      <button onclick="history.back()">⬅️ Voltar</button>
+      <button onclick="window.location.href='login.html'">🔁 Voltar para a Tela de Login</button>
+    </div>
+  </section>
+`;
+  }
+
+    function logout() {
+      localStorage.removeItem("smartlib_usuario");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

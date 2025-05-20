@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal do Funcionário - SmartLib</title>
+  <link rel="stylesheet" href="styles.css" />
+
+</head>
+<body>
+<header class="topo">
+  <div class="logo-container">
+    <h1 class="logo-text">📚 SmartLib</h1>
+  </div>
+
+  <nav>
+    <ul class="nav-links">
+      <li><a href="index.html">Início</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="funcionario.html">Sou Funcionário</a></li>
+      <li><a href="cadastro-livros.html">Cadastrar Livros</a></li>
+    </ul>
+  </nav>
+
+  <div class="user-info" id="user-info">
+    <!-- Preenchido via JS -->
+  </div>
+</header>
+
+<main class="pagina-funcionario">
+
+  <h2>Bem-vindo, Funcionário</h2>
+  <p>Gerencie a biblioteca com as funcionalidades abaixo:</p>
+
+  <div class="acoes-funcionario">
+    <button onclick="window.location.href='cadastro-livros.html'">📚 Cadastrar Novo Livro</button>
+
+    <div class="filtros-historico">
+      <label>Status:
+        <select id="filtro-status">
+          <option value="todos">Todos</option>
+          <option value="Ativo">Ativo</option>
+          <option value="Concluído">Concluído</option>
+        </select>
+      </label>
+
+      <label>Buscar usuário:
+        <input type="text" id="buscaUsuario" placeholder="🔍 Buscar por usuário" oninput="filtrarHistorico()" />
+      </label>
+
+      <button onclick="aplicarFiltros()">🔍 Filtrar Histórico</button>
+
+    </div>
+    <button onclick="gerarRelatorio()">📊 Gerar Relatórios</button>
+    <button onclick="logout()">🚪 Sair</button>
+  </div>
+
+  <div id="resultado-historico"></div>
+
+  <section class="painel-estatisticas">
+    <div class="card-estatistica">
+      <h3>📚 Livros Cadastrados</h3>
+      <p id="estat-total-livros">0</p>
+    </div>
+    <div class="card-estatistica">
+      <h3>👥 Usuários</h3>
+      <p id="estat-total-usuarios">0</p>
+    </div>
+    <div class="card-estatistica">
+      <h3>🔄 Empréstimos Ativos</h3>
+      <p id="estat-emprestimos-ativos">0</p>
+    </div>
+    <div class="card-estatistica">
+      <h3>⭐ Livro Mais Alugado</h3>
+      <p id="estat-livro-top">—</p>
+    </div>
+  </section>
+
+  <section class="logs-atividades">
+    <h3>📝 Atividades Recentes</h3>
+    <ul id="lista-logs"></ul>
+  </section>
+
+  <section class="gerenciar-usuarios">
+    <h3>👥 Gerenciamento de Usuários</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Tipo</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+      </thead>
+      <tbody id="tabela-usuarios"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<script>
+  function atualizarEstatisticas() {
+    const livros = JSON.parse(localStorage.getItem("smartlib_livros")) || [
+      { titulo: "1984" }, { titulo: "Sapiens" }
+    ];
+    const usuarios = JSON.parse(localStorage.getItem("smartlib_usuarios")) || [
+      { nome: "cliente" }
+    ];
+    const emprestimos = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+
+    // Estatísticas
+    const totalLivros = livros.length;
+    const totalUsuarios = usuarios.length;
+    const emprestimosAtivos = emprestimos.filter(e => e.status === "Ativo").length;
+
+    const contagem = {};
+    emprestimos.forEach(e => {
+      contagem[e.livro] = (contagem[e.livro] || 0) + 1;
+    });
+    const top = Object.entries(contagem).sort((a, b) => b[1] - a[1])[0];
+
+    // Atualizar na interface
+    document.getElementById("estat-total-livros").textContent = totalLivros;
+    document.getElementById("estat-total-usuarios").textContent = totalUsuarios;
+    document.getElementById("estat-emprestimos-ativos").textContent = emprestimosAtivos;
+    document.getElementById("estat-livro-top").textContent = top ? top[0] : "—";
+  }
+
+  document.addEventListener("DOMContentLoaded", atualizarEstatisticas);
+</script>
+
+<script>
+  function aplicarFiltros() {
+    const termo = document.getElementById("buscaUsuario").value.toLowerCase();
+    const statusSelecionado = document.getElementById("filtro-status").value;
+
+    const lista = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+
+    const filtrado = lista.filter(emp => {
+      const usuarioMatch = emp.usuario.toLowerCase().includes(termo);
+      const statusMatch = statusSelecionado === "todos" || emp.status === statusSelecionado;
+      return usuarioMatch && statusMatch;
+    });
+
+    exibirHistorico(filtrado);
+  }
+</script>
+<script>
+  function carregarUsuariosSimulados() {
+  const usuarios = JSON.parse(localStorage.getItem("smartlib_usuarios")) || [
+    { nome: "cliente", tipo: "cliente", status: "ativo" },
+    { nome: "joao.silva", tipo: "cliente", status: "ativo" },
+    { nome: "ana.admin", tipo: "funcionario", status: "ativo" }
+  ];
+  localStorage.setItem("smartlib_usuarios", JSON.stringify(usuarios));
+  return usuarios;
+}
+
+function renderizarUsuarios() {
+  const usuarios = carregarUsuariosSimulados();
+  const tabela = document.getElementById("tabela-usuarios");
+  tabela.innerHTML = "";
+
+  usuarios.forEach((u, index) => {
+    const linha = document.createElement("tr");
+
+    linha.innerHTML = `
+      <td>${u.nome}</td>
+      <td>${u.tipo}</td>
+      <td>${u.status}</td>
+      <td>
+        <button onclick="bloquearUsuario(${index})">🔒 Bloquear</button>
+        <button onclick="promoverUsuario(${index})">⬆️ Promover</button>
+        <button onclick="excluirUsuario(${index})">❌ Excluir</button>
+      </td>
+    `;
+
+    tabela.appendChild(linha);
+  });
+}
+
+function bloquearUsuario(index) {
+  const usuarios = carregarUsuariosSimulados();
+  usuarios[index].status = "bloqueado";
+  localStorage.setItem("smartlib_usuarios", JSON.stringify(usuarios));
+  renderizarUsuarios();
+}
+
+function promoverUsuario(index) {
+  const usuarios = carregarUsuariosSimulados();
+  usuarios[index].tipo = "funcionario";
+  localStorage.setItem("smartlib_usuarios", JSON.stringify(usuarios));
+  renderizarUsuarios();
+}
+
+function excluirUsuario(index) {
+  let usuarios = carregarUsuariosSimulados();
+  usuarios.splice(index, 1);
+  localStorage.setItem("smartlib_usuarios", JSON.stringify(usuarios));
+  renderizarUsuarios();
+}
+
+// Chamada ao iniciar
+document.addEventListener("DOMContentLoaded", () => {
+  atualizarEstatisticas();
+  gerarLogsRecentes();
+  renderizarUsuarios();
+});
+</script>
+<script>
+  function gerarLogsRecentes() {
+  // Simulação de logs (pode ser alimentado dinamicamente no futuro)
+  const logs = [
+    "📚 Livro 'Sapiens' cadastrado por Funcionário.",
+    "🔄 Empréstimo de 'It - A Coisa' realizado por cliente.",
+    "📘 Livro '1984' devolvido com sucesso.",
+    "👤 Novo usuário 'joao.silva' criado.",
+    "✏️ Cadastro de livro 'A Revolução dos Bichos' atualizado."
+  ];
+
+  const lista = document.getElementById("lista-logs");
+  lista.innerHTML = "";
+
+  logs.slice(0, 5).forEach(msg => {
+    const li = document.createElement("li");
+    li.textContent = msg;
+    lista.appendChild(li);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  atualizarEstatisticas(); // já existente
+  gerarLogsRecentes();     // novo
+});
+</script>
+
+<script>
+  // Dados simulados
+  const emprestimos = [
+    { livro: "1984", autor: "George Orwell", usuario: "cliente", data: "2025-05-15", status: "Concluído" },
+    { livro: "Sapiens", autor: "Yuval Harari", usuario: "cliente", data: "2025-05-17", status: "Ativo" },
+    { livro: "A Culpa é das Estrelas", autor: "John Green", usuario: "cliente", data: "2025-05-10", status: "Concluído" },
+    { livro: "It - A Coisa", autor: "Stephen King", usuario: "cliente", data: "2025-05-18", status: "Ativo" }
+  ];
+  localStorage.setItem("smartlib_emprestimos", JSON.stringify(emprestimos));
+
+  function verHistorico() {
+    const lista = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+    exibirHistorico(lista);
+  }
+
+  function exibirHistorico(lista) {
+    const container = document.getElementById("resultado-historico");
+    if (lista.length === 0) {
+      container.innerHTML = "<p>Nenhum empréstimo encontrado.</p>";
+      return;
+    }
+
+    let html = `
+        <table>
+          <thead>
+            <tr><th>Livro</th><th>Autor</th><th>Usuário</th><th>Data</th><th>Status</th></tr>
+          </thead><tbody>
+      `;
+    lista.forEach(item => {
+      html += `<tr>
+          <td>${item.livro}</td>
+          <td>${item.autor}</td>
+          <td>${item.usuario}</td>
+          <td>${item.data}</td>
+          <td>${item.status}</td>
+        </tr>`;
+    });
+    html += "</tbody></table>";
+    container.innerHTML = html;
+  }
+
+  function filtrarHistorico() {
+    const termo = document.getElementById("buscaUsuario").value.toLowerCase();
+    const lista = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+    const filtrado = lista.filter(emp => emp.usuario.toLowerCase().includes(termo));
+    exibirHistorico(filtrado);
+  }
+
+  function gerarRelatorio() {
+    const lista = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+    const livros = lista.map(emp => emp.livro);
+    const usuarios = [...new Set(lista.map(emp => emp.usuario))];
+    const statusAtivos = lista.filter(emp => emp.status === "Ativo");
+
+    const maisAlugados = livros.reduce((acc, livro) => {
+      acc[livro] = (acc[livro] || 0) + 1;
+      return acc;
+    }, {});
+
+    const topLivro = Object.entries(maisAlugados).sort((a, b) => b[1] - a[1])[0];
+
+    const relatorio = `
+        <div class="relatorio">
+          <h3>📊 Relatório</h3>
+          <ul>
+            <li><strong>Livro mais alugado:</strong> ${topLivro[0]} (${topLivro[1]}x)</li>
+            <li><strong>Total de usuários ativos:</strong> ${usuarios.length}</li>
+            <li><strong>Empréstimos ainda ativos:</strong> ${statusAtivos.length}</li>
+          </ul>
+        </div>
+      `;
+
+    document.getElementById("resultado-historico").innerHTML = relatorio;
+  }
+
+  function logout() {
+    localStorage.removeItem("smartlib_usuario");
+    window.location.href = "login.html";
+  }
+
+  // Verificação de permissão
+  const usuario = JSON.parse(localStorage.getItem("smartlib_usuario"));
+  if (!usuario || usuario.tipo !== "funcionario") {
+    document.body.innerHTML = `
+  <section class="mensagem-permissao">
+    <h2>🔒 Acesso restrito</h2>
+    <p>Você não tem permissão para acessar essa área da SmartLib. Apenas funcionários podem acessar esta seção.</p>
+    <div class="botoes-permissao">
+      <button onclick="history.back()">⬅️ Voltar</button>
+      <button onclick="window.location.href='login.html'">🔁 Voltar para a Tela de Login</button>
+    </div>
+  </section>
+`;
+  }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const usuario = JSON.parse(localStorage.getItem("smartlib_usuario"));
+    const userInfo = document.getElementById("user-info");
+
+    if (usuario && userInfo) {
+      const fotoSalva = localStorage.getItem("smartlib_fotoPerfil");
+
+      userInfo.innerHTML = `
+        <img src="${fotoSalva || "https://i.pravatar.cc/150?u=" + usuario.usuario}" alt="Foto do usuário" id="foto-perfil" />
+        <span>${usuario.tipo.charAt(0).toUpperCase() + usuario.tipo.slice(1)}</span>
+        <div class="menu-dropdown" id="menu-dropdown">
+          <button onclick="logout()">🚪 Sair</button>
+          <label style="font-size: 0.9em; color: gray;">📷 Mudar Foto
+            <input type="file" id="input-foto-perfil" accept="image/*" style="display: none;">
+          </label>
+        </div>
+      `;
+
+      // Toggle do menu
+      userInfo.addEventListener("click", () => {
+        const menu = document.getElementById("menu-dropdown");
+        menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+      });
+
+      // Upload de nova imagem
+      document.getElementById("input-foto-perfil").addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const url = event.target.result;
+          localStorage.setItem("smartlib_fotoPerfil", url);
+          document.getElementById("foto-perfil").src = url;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem("smartlib_usuario");
+    window.location.href = "login.html";
+  }
+</script>
+</body>
+</html>

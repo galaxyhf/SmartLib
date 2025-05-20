@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro - SmartLib</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="tela-login">
+  <div class="form-container" id="form-container">
+    <h2>Cadastro de Usuário</h2>
+    
+<form id="cadastroForm">
+  <div class="form-group">
+    <label for="nome">Nome Completo</label>
+    <input type="text" id="nome" required />
+  </div>
+  <div class="form-group">
+    <label for="email">E-mail</label>
+    <input type="email" id="email" required />
+  </div>
+  <div class="form-group">
+    <label for="usuario">Usuário</label>
+    <input type="text" id="usuario" required />
+  </div>
+  <div class="form-group">
+    <label for="senha">Senha</label>
+    <input type="password" id="senha" required />
+  </div>
+  <div class="form-group">
+    <label for="confirmar">Confirmar Senha</label>
+    <input type="password" id="confirmar" required />
+  </div>
+  <div class="form-group">
+    <label for="tipo">Tipo de Conta</label>
+    <select id="tipo" required>
+      <option value="">Selecione</option>
+      <option value="cliente">Cliente</option>
+      <option value="funcionario">Funcionário</option>
+    </select>
+  </div>
+  <button type="submit">Cadastrar</button>
+  <p class="form-footer">Já tem conta? <a href="login.html">Voltar para login</a></p>
+</form>
+
+  </div>
+
+  <div class="form-container" id="sucesso-container" style="display: none;">
+    <h2>✅ Cadastro realizado!</h2>
+    <p>Você será redirecionado para o login...</p>
+    <button onclick="window.location.href='login.html'">Ir para Login</button>
+  </div>
+
+  
+<script>
+  document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const usuario = document.getElementById('usuario').value.trim();
+    const senha = document.getElementById('senha').value;
+    const confirmar = document.getElementById('confirmar').value;
+    const tipo = document.getElementById('tipo').value;
+
+    if (senha !== confirmar) {
+      alert("As senhas não coincidem!");
+      return;
+    }
+
+    if (!tipo) {
+      alert("Selecione o tipo de conta!");
+      return;
+    }
+
+    const novoUsuario = { nome, email, usuario, senha, tipo };
+
+    let usuarios = JSON.parse(localStorage.getItem("smartlib_usuarios")) || [];
+
+    const usuarioExistente = usuarios.find(u => u.usuario === usuario);
+    if (usuarioExistente) {
+      alert("Este nome de usuário já está em uso.");
+      return;
+    }
+
+    usuarios.push(novoUsuario);
+    localStorage.setItem("smartlib_usuarios", JSON.stringify(usuarios));
+
+    alert("✅ Cadastro realizado com sucesso!");
+    window.location.href = "login.html";
+  });
+</script>
+
+</body>
+</html>

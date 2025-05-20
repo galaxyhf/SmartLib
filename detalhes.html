@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Detalhes do Livro</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topo">
+    <div class="logo-container">
+        <h1 class="logo-text">📚 SmartLib</h1>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="catalogo.html">Catálogo</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="pagina-detalhes">
+    <div class="card-detalhes">
+        <div class="imagem">
+            <img id="detalhe-imagem" src="" alt="Capa do Livro">
+            <button class="voltar" onclick="history.back()">⬅️ Voltar</button>
+        </div>
+        <div class="info">
+            <h2 id="detalhe-titulo"></h2>
+            <p id="detalhe-autor"></p>
+            <p id="detalhe-genero"></p>
+            <p id="detalhe-status"></p>
+            <div class="acoes">
+                <button>📖 Alugar</button>
+                <button>⬇️ Baixar PDF</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const livro = JSON.parse(sessionStorage.getItem("livroSelecionado"));
+
+    if (livro) {
+        document.getElementById("detalhe-titulo").textContent = livro.titulo;
+        document.getElementById("detalhe-autor").textContent = "Autor: " + livro.autor;
+        document.getElementById("detalhe-genero").textContent = "Gênero: " + livro.genero;
+        document.getElementById("detalhe-status").textContent = "Status: " + livro.status;
+        document.getElementById("detalhe-imagem").src = livro.imagem;
+        document.getElementById("detalhe-imagem").alt = `Capa do livro ${livro.titulo}`;
+    } else {
+        document.querySelector("main").innerHTML = "<p style='text-align:center;'>❌ Livro não encontrado. Volte ao <a href='catalogo.html'>catálogo</a>.</p>";
+    }
+
+
+</script>
+</body>
+</html>

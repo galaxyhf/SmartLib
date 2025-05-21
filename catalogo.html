@@ -8,7 +8,7 @@
 </head>
 <body>
 <header>
-  <h1 class="logo">📚 SmartLib</h1>
+  <h1 class="logo"><a href="index.html" style="color: inherit; text-decoration: none;">📚 SmartLib</a></h1>
   <nav>
     <ul>
       <li><a href="index.html">Início</a></li>
@@ -49,7 +49,7 @@
       </select>
     </div>
 
-    <div class="livros-grid">
+      <div class="livros-grid">
       <div class="livro" data-genero="ficcao_cientifica" data-status="disponivel">
         <img src="assets/1984 - George Orwell.png" alt="1984" />
         <p class="titulo">1984</p>
@@ -182,6 +182,64 @@
     localStorage.removeItem("smartlib_usuario");
     window.location.href = "login.html";
   }
+
+  function carregarLivrosCatalogo() {
+  const livros = JSON.parse(localStorage.getItem('smartlib_livros')) || [];
+  const grid = document.querySelector('.livros-grid');
+  grid.innerHTML = ''; // limpa grid
+
+  livros.forEach((livro, index) => {
+    const divLivro = document.createElement('div');
+    divLivro.classList.add('livro');
+    divLivro.setAttribute('data-genero', livro.genero || 'desconhecido');
+    divLivro.setAttribute('data-status', 'disponivel'); // ou baseado em lógica real
+    divLivro.setAttribute('data-index', index); // importante para identificação
+
+    divLivro.innerHTML = `
+      <img src="${livro.imagem || 'assets/capa-default.png'}" alt="${livro.titulo}">
+      <p class="titulo">${livro.titulo}</p>
+      <p class="autor">${livro.autor}</p>
+    `;
+
+    grid.appendChild(divLivro);
+  });
+
+  // Depois que os livros foram adicionados, registre os eventos de clique
+  registrarEventosClickLivros();
+}
+
+function registrarEventosClickLivros() {
+  const livrosElementos = document.querySelectorAll('.livro');
+  livrosElementos.forEach(livroEl => {
+    livroEl.addEventListener('click', () => {
+      const index = livroEl.getAttribute('data-index');
+      abrirModalLivro(index);
+    });
+  });
+}
+
 </script>
+<button id="btnTopo" title="Voltar ao topo">⭡</button>
+<script>
+const btnTopo = document.getElementById("btnTopo");
+
+// Exibe o botão ao rolar mais de 100px da página
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 100) {
+    btnTopo.style.display = "block";
+  } else {
+    btnTopo.style.display = "none";
+  }
+});
+
+// Ao clicar, rola suavemente para o topo
+btnTopo.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
+</script>
+
 </body>
 </html>

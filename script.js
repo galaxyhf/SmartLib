@@ -291,3 +291,28 @@ if (loginForm) {
     window.location.href = 'index.html';
   });
 }
+
+document.querySelector('form').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const livro = {
+    isbn: document.getElementById('isbn').value.trim(),
+    titulo: document.getElementById('titulo').value.trim(),
+    autor: document.getElementById('autor').value.trim(),
+    genero: document.getElementById('genero').value.trim(),
+    ano: document.getElementById('ano').value.trim(),
+    imagem: document.getElementById('livro-imagem').src || ''
+  };
+
+  let livros = JSON.parse(localStorage.getItem('smartlib_livros')) || [];
+
+  livros.push(livro);
+
+  localStorage.setItem('smartlib_livros', JSON.stringify(livros));
+
+  alert('Livro cadastrado com sucesso!');
+
+  // Limpa o formulário e campos
+  this.reset();
+  document.getElementById('livro-imagem').style.display = 'none';
+});

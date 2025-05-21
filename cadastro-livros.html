@@ -9,7 +9,7 @@
 <body>
 
   <header>
-    <h1 class="logo">📚 SmartLib</h1>
+    <h1 class="logo"><a href="index.html" style="color: inherit; text-decoration: none;">📚 SmartLib</a></h1>
     <nav>
       <ul>
         <li><a href="index.html">Início</a></li>
@@ -64,10 +64,8 @@
         </label>
 
         <div class="acoes-cadastro">
-          <button type="button" class="voltar" onclick="history.back()">
-            ⬅️ Voltar
-          </button>
-          <button type="submit">📚 Cadastrar</button>
+          <button type="button" class="voltar" onclick="history.back()">⬅️ Voltar</button>
+          <button type="submit" class="btn-cadastrar">📚 Cadastrar</button>
         </div>
       </form>
     </section>
@@ -177,5 +175,42 @@
       window.location.href = "login.html";
     }
   </script>
+
+  <script>
+  document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const novoLivro = {
+      isbn: document.getElementById('isbn').value.trim(),
+      titulo: document.getElementById('titulo').value.trim(),
+      autor: document.getElementById('autor').value.trim(),
+      genero: document.getElementById('genero').value.trim(),
+      ano: document.getElementById('ano').value.trim(),
+      imagem: document.getElementById('livro-imagem').src || ''
+    };
+
+    let livros = JSON.parse(localStorage.getItem('smartlib_livros')) || [];
+
+    // Verifica duplicidade pelo ISBN
+    const existe = livros.some(livro => livro.isbn === novoLivro.isbn);
+    if (existe) {
+      alert('Este livro já está cadastrado no catálogo!');
+      return;
+    }
+
+    livros.push(novoLivro);
+    localStorage.setItem('smartlib_livros', JSON.stringify(livros));
+
+    alert('Livro cadastrado com sucesso!');
+
+    // Limpa o formulário
+    this.reset();
+    document.getElementById('livro-imagem').style.display = 'none';
+
+    // Redireciona para catálogo para mostrar o livro cadastrado
+    window.location.href = 'catalogo.html';
+  });
+</script>
+
 </body>
 </html>

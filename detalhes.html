@@ -39,20 +39,53 @@
 </main>
 
 <script>
-    const livro = JSON.parse(sessionStorage.getItem("livroSelecionado"));
+  const livro = JSON.parse(sessionStorage.getItem("livroSelecionado"));
+  const usuario = JSON.parse(localStorage.getItem("smartlib_usuario"));
 
-    if (livro) {
-        document.getElementById("detalhe-titulo").textContent = livro.titulo;
-        document.getElementById("detalhe-autor").textContent = "Autor: " + livro.autor;
-        document.getElementById("detalhe-genero").textContent = "Gênero: " + livro.genero;
-        document.getElementById("detalhe-status").textContent = "Status: " + livro.status;
-        document.getElementById("detalhe-imagem").src = livro.imagem;
-        document.getElementById("detalhe-imagem").alt = `Capa do livro ${livro.titulo}`;
-    } else {
-        document.querySelector("main").innerHTML = "<p style='text-align:center;'>❌ Livro não encontrado. Volte ao <a href='catalogo.html'>catálogo</a>.</p>";
-    }
+  if (livro) {
+    document.getElementById("detalhe-titulo").textContent = livro.titulo;
+    document.getElementById("detalhe-autor").textContent = "Autor: " + livro.autor;
+    document.getElementById("detalhe-genero").textContent = "Gênero: " + livro.genero;
+    document.getElementById("detalhe-status").textContent = "Status: " + livro.status;
+    document.getElementById("detalhe-imagem").src = livro.imagem;
+    document.getElementById("detalhe-imagem").alt = `Capa do livro ${livro.titulo}`;
 
+    const botaoAlugar = document.querySelector(".acoes button:first-child");
+    botaoAlugar.addEventListener("click", () => {
+      if (!usuario || usuario.tipo !== "cliente") {
+        alert("Somente usuários do tipo 'cliente' podem alugar livros.");
+        return;
+      }
 
+      let emprestimos = JSON.parse(localStorage.getItem("smartlib_emprestimos"));
+      if (!Array.isArray(emprestimos)) emprestimos = [];
+
+      // Verifica se o livro já está alugado pelo mesmo usuário ativo (evitar duplicação)
+      const jaAlugado = emprestimos.some(e => 
+        e.livro === livro.titulo && e.usuario === usuario.usuario && e.status === "Ativo"
+      );
+      if (jaAlugado) {
+        alert("Você já alugou este livro e o empréstimo está ativo.");
+        return;
+      }
+
+      const novaEntrada = {
+        livro: livro.titulo,
+        autor: livro.autor,
+        usuario: usuario.usuario,
+        data: new Date().toISOString().split("T")[0],
+        status: "Ativo"
+      };
+
+      emprestimos.push(novaEntrada);
+      localStorage.setItem("smartlib_emprestimos", JSON.stringify(emprestimos));
+
+      alert("📚 Livro alugado com sucesso!");
+      window.location.href = "catalogo.html";
+    });
+  } else {
+    document.querySelector("main").innerHTML = "<p style='text-align:center;'>❌ Livro não encontrado. Volte ao <a href='catalogo.html'>catálogo</a>.</p>";
+  }
 </script>
 </body>
 </html>

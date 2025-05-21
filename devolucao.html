@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Devolver Livros - SmartLib</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topo">
+    <div class="logo-container">
+      <h1 class="logo-text">📚 SmartLib - Devoluções</h1>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="funcionario.html">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="pagina-funcionario">
+    <h2>Devoluções Pendentes</h2>
+    <p>Lista dos livros alugados que ainda precisam ser devolvidos.</p>
+    <div id="resultado-devolucao"></div>
+
+    <div style="text-align:center; margin-top: 30px;">
+      <button class="voltar" onclick="window.location.href='funcionario.html'">⬅️ Voltar</button>
+    </div>
+  </main>
+
+  <script>
+    function exibirDevolucoes(lista) {
+  const container = document.getElementById("resultado-devolucao");
+  if (lista.length === 0) {
+    container.innerHTML = "<p>Nenhum empréstimo ativo para devolver.</p>";
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Livro</th>
+          <th>Autor</th>
+          <th>Usuário</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  lista.forEach((item, index) => {
+    html += `
+      <tr>
+        <td>${item.livro}</td>
+        <td>${item.autor}</td>
+        <td>${item.usuario}</td>
+        <td>${item.data}</td>
+        <td>${item.status}</td>
+        <td><button onclick="concluirEmprestimo(${item.originalIndex})">Devolver</button></td>
+      </tr>`;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  container.innerHTML = html;
+}
+    function concluirEmprestimo(indice) {
+      const emprestimos = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+      if (emprestimos[indice]) {
+        emprestimos[indice].status = "Concluído";
+        localStorage.setItem("smartlib_emprestimos", JSON.stringify(emprestimos));
+        alert(`Empréstimo de "${emprestimos[indice].livro}" devolvido com sucesso.`);
+        carregarDevolucoes();
+      } else {
+        alert("Empréstimo não encontrado.");
+      }
+    }
+
+    function carregarDevolucoes() {
+  const emprestimos = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+  const ativos = emprestimos
+    .map((e, i) => ({ ...e, originalIndex: i }))  
+    .filter(e => e.status === "Ativo");
+  exibirDevolucoes(ativos);
+}
+
+    document.addEventListener("DOMContentLoaded", () => {
+      carregarDevolucoes();
+    });
+  </script>
+</body>
+</html>

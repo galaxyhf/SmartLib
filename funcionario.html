@@ -34,6 +34,7 @@
 
   <div class="acoes-funcionario">
     <button onclick="window.location.href='cadastro-livros.html'">📚 Cadastrar Novo Livro</button>
+    <button onclick="window.location.href='devolucao.html'">📕 Devolver Livro</button>
 
     <div class="filtros-historico">
       <label>Status:
@@ -205,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
   atualizarEstatisticas();
   gerarLogsRecentes();
   renderizarUsuarios();
+  verHistorico();
 });
 </script>
 <script>
@@ -235,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 <script>
-  // Dados simulados
+  /* Dados simulados
   const emprestimos = [
     { livro: "1984", autor: "George Orwell", usuario: "cliente", data: "2025-05-15", status: "Concluído" },
     { livro: "Sapiens", autor: "Yuval Harari", usuario: "cliente", data: "2025-05-17", status: "Ativo" },
@@ -243,38 +245,50 @@ document.addEventListener("DOMContentLoaded", () => {
     { livro: "It - A Coisa", autor: "Stephen King", usuario: "cliente", data: "2025-05-18", status: "Ativo" }
   ];
   localStorage.setItem("smartlib_emprestimos", JSON.stringify(emprestimos));
-
+  */
   function verHistorico() {
     const lista = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
     exibirHistorico(lista);
   }
 
   function exibirHistorico(lista) {
-    const container = document.getElementById("resultado-historico");
-    if (lista.length === 0) {
-      container.innerHTML = "<p>Nenhum empréstimo encontrado.</p>";
-      return;
-    }
-
-    let html = `
-        <table>
-          <thead>
-            <tr><th>Livro</th><th>Autor</th><th>Usuário</th><th>Data</th><th>Status</th></tr>
-          </thead><tbody>
-      `;
-    lista.forEach(item => {
-      html += `<tr>
-          <td>${item.livro}</td>
-          <td>${item.autor}</td>
-          <td>${item.usuario}</td>
-          <td>${item.data}</td>
-          <td>${item.status}</td>
-        </tr>`;
-    });
-    html += "</tbody></table>";
-    container.innerHTML = html;
+  const container = document.getElementById("resultado-historico");
+  if (lista.length === 0) {
+    container.innerHTML = "<p>Nenhum empréstimo encontrado.</p>";
+    return;
   }
 
+  let html = `
+      <table>
+        <thead>
+          <tr><th>Livro</th><th>Autor</th><th>Usuário</th><th>Data</th><th>Status</th></tr>
+        </thead><tbody>
+    `;
+  lista.forEach((item, index) => {
+    html += `<tr>
+        <td>${item.livro}</td>
+        <td>${item.autor}</td>
+        <td>${item.usuario}</td>
+        <td>${item.data}</td>
+        <td>${item.status}</td>
+      </tr>`;
+  });
+  html += "</tbody></table>";
+  container.innerHTML = html;
+}
+
+  function concluirEmprestimo(indice) {
+  const emprestimos = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+  if (emprestimos[indice]) {
+    emprestimos[indice].status = "Concluído";
+    localStorage.setItem("smartlib_emprestimos", JSON.stringify(emprestimos));
+    alert(`Empréstimo de "${emprestimos[indice].livro}" marcado como devolvido.`);
+    verHistorico(); // Atualiza a tabela
+    atualizarEstatisticas(); // Atualiza as estatísticas
+  } else {
+    alert("Empréstimo não encontrado.");
+  }
+}
   function filtrarHistorico() {
     const termo = document.getElementById("buscaUsuario").value.toLowerCase();
     const lista = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
@@ -373,6 +387,11 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.removeItem("smartlib_usuario");
     window.location.href = "login.html";
   }
+  function mostrarDevolucoes() {
+  const emprestimos = JSON.parse(localStorage.getItem("smartlib_emprestimos")) || [];
+  const ativos = emprestimos.filter(e => e.status === "Ativo");
+  exibirHistorico(ativos);
+}
 </script>
 </body>
 </html>

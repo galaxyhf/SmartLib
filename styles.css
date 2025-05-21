@@ -1415,6 +1415,28 @@ main.pagina-funcionario {
   color: var(--accent);
 }
 
+button.voltar {
+  margin-top: 20px;
+  background-color: #0275d8;           
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button.voltar:hover {
+  background-color: #025aa5;
+  transform: translateY(-1px);
+}
+
 /* faz o container da capa virar um flex-column,
    para o botão ﬂuir logo abaixo da imagem */
 .card-detalhes .imagem {
@@ -1509,4 +1531,26 @@ main.pagina-funcionario {
 }
 .forgot-password a:hover {
   text-decoration: underline;
+}
+
+#resultado-devolucao table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+#resultado-devolucao th,
+#resultado-devolucao td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+#resultado-devolucao th {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+#resultado-devolucao tr:nth-child(even) {
+  background-color: #f5f5f5;
 }

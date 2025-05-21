@@ -1499,3 +1499,14 @@ main.pagina-funcionario {
   background-color: #0096c7;
 }
 
+.forgot-password {
+  text-align: right;
+  margin-top: 1rem;
+}
+.forgot-password a {
+  text-decoration: none;
+  color:#0077b6;
+}
+.forgot-password a:hover {
+  text-decoration: underline;
+}

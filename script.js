@@ -245,3 +245,49 @@ function logout() {
   localStorage.removeItem("smartlib_usuario");
   window.location.href = "login.html";
 }
+
+// script.js
+
+// Só roda na tela de login
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    // Exemplo de usuários fixos
+    const usuariosFixos = [
+      { usuario: 'cliente',    senha: 'cliente123',    tipo: 'cliente'    },
+      { usuario: 'funcionario', senha: 'funcionario123', tipo: 'funcionario' }
+    ];
+
+    // Usuários cadastrados no localStorage
+    const cadastrados = JSON.parse(localStorage.getItem('smartlib_usuarios')) || [];
+
+    // Junta tudo
+    const todos = usuariosFixos.concat(cadastrados);
+
+    // Valida
+    const user = todos.find(u => u.usuario === username && u.senha === password);
+    if (!user) {
+      alert('Usuário ou senha inválidos.');
+      return;
+    }
+
+    // **DEBUG**: veja no console
+    console.log('Login bem-sucedido:', user);
+
+    // Grava flag de sessão
+    localStorage.setItem('usuarioLogado',
+      JSON.stringify({ usuario: user.usuario, tipo: user.tipo })
+    );
+
+    // **DEBUG**: confirme que gravou
+    console.log('Storage agora tem:', localStorage.getItem('usuarioLogado'));
+
+    // Redireciona
+    window.location.href = 'index.html';
+  });
+}

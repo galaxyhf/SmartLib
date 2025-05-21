@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Biblioteca Online</title>
+  <title>Smart Lib</title>
+
   <link rel="stylesheet" href="styles.css" />
 </head>
+
+<script>
+  // Se não houver sessão, vai pro login
+  if (!localStorage.getItem("smartlib_usuario")) {
+    window.location.replace("login.html");
+  }
+</script>
+
 <body>
   <div id="mensagem-aviso" style="text-align:center; background:#ffe0e0; color:#b00020; padding:12px; display:none;"></div>
 
@@ -166,15 +176,6 @@
   <script src="script.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("acesso") === "negado") {
-      const aviso = document.getElementById("mensagem-aviso");
-      aviso.textContent = "🚫 Acesso negado: você não tem permissão para acessar essa área.";
-      aviso.style.display = "block";
-    }
-  });
-
   document.addEventListener("DOMContentLoaded", () => {
     const user = JSON.parse(localStorage.getItem("smartlib_usuario"));
 
@@ -263,5 +264,6 @@
     window.location.href = "login.html";
   }
 </script>
+
 </body>
 </html>

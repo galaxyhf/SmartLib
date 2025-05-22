@@ -3,6 +3,7 @@
 SmartLib é um sistema de biblioteca digital, onde os usuários podem cadastrar, buscar e alugar livros online. O projeto oferece uma interface simples para clientes e funcionários, com funcionalidades como cadastro de usuários, empréstimo de livros, devolução e mais.
 
 **Funcionalidades**
+
 Cadastro de Usuários: Permite a criação de contas para clientes e funcionários.
 
 Login de Usuários: Usuários podem realizar login utilizando credenciais previamente cadastradas.
@@ -20,6 +21,7 @@ Recuperação de Senha: Usuários podem redefinir suas senhas se necessário.
 Gestão de Funcionários: Funcionários têm acesso a relatórios e podem gerenciar o sistema, incluindo bloqueio e promoção de usuários.
 
 **Tecnologias Utilizadas**
+
 HTML5: Estrutura da página e formulários.
 
 CSS3: Estilização das páginas e design responsivo.

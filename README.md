@@ -26,4 +26,4 @@ CSS3: Estilização das páginas e design responsivo.
 
 JavaScript: Funcionalidade interativa, como login, cadastro, e manipulação de dados no localStorage.
 
-Desenvolvido por Bruno Souza, Caio Silva e Thyago Azevedo
+**Desenvolvido por Bruno Souza, Caio Silva e Thyago Azevedo**

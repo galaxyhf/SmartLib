@@ -1,291 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Lib</title>
-
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none';">
+  <title>Login - SmartLib</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-
-<script>
-  // Se não houver sessão, vai pro login
-  if (!localStorage.getItem("smartlib_usuario")) {
-    window.location.replace("login.html");
-  }
-</script>
-
-<body>
-  <div id="mensagem-aviso" style="text-align:center; background:#ffe0e0; color:#b00020; padding:12px; display:none;"></div>
-
-
-  <!-- Header -->
-  <header class="topo">
-    <div class="logo-container">
-      <h1 class="logo"><a href="index.html" style="color: inherit; text-decoration: none;">📚 SmartLib</a></h1>
+<body class="tela-login">
+<div class="form-container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="usuario">Usuário</label>
+      <input type="text" id="usuario" required />
     </div>
-
-    <nav>
-      <ul class="nav-links">
-        <li><a href="index.html">Início</a></li>
-        <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="funcionario.html">Sou Funcionário</a></li>
-        <li><a href="cadastro-livros.html">Cadastrar Livros</a></li>
-      </ul>
-    </nav>
-
-    <div class="user-info" id="user-info">
-      <!-- Preenchido via JS -->
+    <div class="form-group">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" required />
     </div>
-  </header>
-
-  <!-- Banner -->
-  <section class="banner">
-    <div class="banner-content">
-      <h1 id="typing"></h1>
-      <p>Conecte-se à nossa comunidade literária</p>
-      <button onclick="location.href='catalogo.html'">Explore o Catálogo</button>
+    <div class="form-group">
+      <label for="tipo">Tipo de Conta</label>
+      <select id="tipo" required>
+        <option value="">Selecione</option>
+        <option value="cliente">Cliente</option>
+        <option value="funcionario">Funcionário</option>
+      </select>
     </div>
-  </section>
+    <button type="submit">Entrar</button>
+    <p class="forgot-password">
+      <a href="forgot-password.html">Esqueci minha senha</a>
+    </p>
+    <p class="form-footer">Não tem conta? <a href="cadastro-usuario.html">Cadastre-se</a></p>
+    <p id="error-message" class="erro" style="display: none;">Usuário ou senha inválidos.</p>
+  </form>
+</div>
 
-  <section class="destaques">
-    <h2>Na SmartLib você pode:</h2>
-    <div class="icones-servicos">
-      <div class="card">
-        <img src="assets/icon-book.png" alt="Livros" />
-        <p>Consultar mais de 5.000 títulos</p>
-      </div>
-      <div class="card">
-        <img src="assets/icon-lend.png" alt="Empréstimos" />
-        <p>Reservar e renovar online</p>
-      </div>
-      <div class="card">
-        <img src="assets/icon-digital.png" alt="Ebooks" />
-        <p>Ler e-books direto no navegador</p>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="destaques">
-  <h2>Livros Populares</h2>
-  <div class="livros-grid">
-    <!-- Primeira cópia dos livros -->
-    <div class="livro" data-genero="ficcao_cientifica" data-status="disponivel">
-      <img src="assets/1984 - George Orwell.png" alt="Capa do livro 1984" />
-      <p class="titulo">1984</p>
-      <p class="autor">George Orwell</p>
-    </div>
-    
-    <div class="livro" data-genero="ficcao_cientifica" data-status="disponivel">
-      <img src="assets/A Cantiga dos Passaros e das Serpentes  - Suzanne Collins.png" alt="A Cantiga dos Passaros e das Serpentes" />
-      <p class="titulo">A Cantiga dos Pássaros e das Serpentes</p>
-      <p class="autor">Suzanne Collins</p>
-    </div>
-    
-    <div class="livro" data-genero="romance" data-status="disponivel">
-      <img src="assets/A Cinco passo de Você - Rachael Lippincott.png" alt="A Cinco Passos de Você" />
-      <p class="titulo">A Cinco Passos de Você</p>
-      <p class="autor">Rachael Lippincott</p>
-    </div>
-  
-    <div class="livro" data-genero="romance" data-status="disponivel">
-      <img src="assets/A Culpa é das Estrelhas - John Green.png" alt="A Culpa é das Estrelas" />
-      <p class="titulo">A Culpa é das Estrelas</p>
-      <p class="autor">John Green</p>
-    </div>
-    
-    <div class="livro" data-genero="fantasia" data-status="disponivel">
-      <img src="assets/A Vida Invísivel de Addie Larue - V. E. Schwab.png" alt="A Vida Invisível de Addie Larue" />
-      <p class="titulo">A Vida Invisível de Addie LaRue</p>
-      <p class="autor">V. E. Schwab</p>
-    </div>
-    
-    <div class="livro" data-genero="ciencia" data-status="disponivel">
-      <img src="assets/Breves Respostas para Grandes Questões - Stephen Hawking.png" alt="Breves Respostas para Grandes Questões" />
-      <p class="titulo">Breves Respostas para Grandes Questões</p>
-      <p class="autor">Stephen Hawking</p>
-    </div>      
-  </section>
-
-  <section class="novidades-semana">
-    <h2>Novidades da Semana</h2>
-    <div class="carrossel">
-      <div class="livro-card"><img src="assets/A%20Vida%20Invísivel%20de%20Addie%20Larue%20-%20V.%20E.%20Schwab.png" alt="Livro novo 1"><p>A Vida Invísivel de Addie Larue</p></div>
-      <div class="livro-card"><img src="assets/Breves%20Respostas%20para%20Grandes%20Questões%20-%20Stephen%20Hawking.png" alt="Livro novo 2"><p>Breves Respostas para Grandes Questões</p></div>
-      <div class="livro-card"><img src="assets/A%20Cinco%20passo%20de%20Você%20-%20Rachael%20Lippincott.png" alt="Livro novo 3"><p>A Cinco Passos de Você</p></div>
-    </div>
-  </section>
-
-  <section class="recomendacoes">
-    <h2>Leitores recomendam</h2>
-    <div class="depoimentos">
-      <div class="depoimento">
-        <p>"Sistema muito intuitivo, achei todos os livros que precisava!"</p>
-        <span>⭐⭐⭐⭐⭐</span><br>
-        <small>— Ana P., estudante</small>
-      </div>
-      <div class="depoimento">
-        <p>"A biblioteca online me salvou nas leituras obrigatórias da faculdade."</p>
-        <span>⭐⭐⭐⭐</span><br>
-        <small>— João M., universitário</small>
-      </div>
-    </div>
-  </section>
-
-<!-- Seção de Novidades (Substituindo Eventos por algo mais relevante) -->
-<section class="novidades">
-  <h2>Novidades e Lançamentos</h2>
-  <div class="novidade">Lançamento de Novos E-books - 15/04</div>
-  <div class="novidade">Curso de Introdução à Programação - 20/04</div>
-  <div class="novidade">Semana do Livro Infantil - 25/04</div>
-</section>
-
-  <section class="caixas-acao">
-    <div class="card-acao">
-      <h2>Comece agora sua jornada literária</h2>
-      <p>É gratuito, rápido e você acessa tudo de qualquer lugar!</p>
-      <button onclick="location.href='login.html'">Entrar / Cadastrar</button>
-    </div>
-    <div class="card-acao">
-      <h2>Pronto para começar sua leitura?</h2>
-      <p>Crie sua conta agora mesmo e aproveite todos os benefícios da SmartLib.</p>
-      <button onclick="location.href='login.html'">Criar Conta Grátis</button>
-    </div>
-  </section>
-
-  <!-- Rodapé -->
-  <footer>
-    <div class="links-rapidos">
-      <a href="#">Catálogo</a> |
-      <a href="#">Serviços</a> |
-      <a href="#">Eventos</a> |
-      <a href="#">Contato</a>
-    </div>
-    <div class="contato">
-      <p>📍 Rua do Conhecimento, 123 - Cidade Saber</p>
-      <p>📞 (00) 1234-5678 | 📧 contato@biblioteca.com</p>
-    </div>
-    <div class="newsletter">
-      <input type="email" placeholder="Receba nossas novidades por e-mail" />
-      <button>Inscrever-se</button>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("smartlib_usuario"));
-
-    const linkFuncionario = document.querySelector('a[href="funcionario.html"]');
-    const linkCadastroLivros = document.querySelector('a[href="cadastro-livros.html"]');
-
-    const containerMensagem = document.createElement('div');
-    containerMensagem.classList.add('mensagem-bloqueio');
-    containerMensagem.innerHTML = `
-  <section class="mensagem-permissao">
-    <h2>🔒 Acesso restrito</h2>
-    <p>Você não tem permissão para acessar essa área da SmartLib. Apenas funcionários podem acessar esta seção.</p>
-    <div class="botoes-permissao">
-    <button onclick="location.reload()">⬅️ Voltar</button>
-    <button onclick="window.location.href='login.html'">
-      🔁 Voltar para a Tela de Login
-    </button>
-  </div>
-`;
-
-    if (user && user.tipo === "cliente") {
-      if (linkFuncionario) {
-        linkFuncionario.addEventListener('click', e => {
-          e.preventDefault();
-          const main = document.querySelector("main") || document.body;
-          main.innerHTML = '';
-          main.appendChild(containerMensagem);
-        });
-      }
-
-      if (linkCadastroLivros) {
-        linkCadastroLivros.addEventListener('click', e => {
-          e.preventDefault();
-          const main = document.querySelector("main") || document.body;
-          main.innerHTML = '';
-          main.appendChild(containerMensagem);
-        });
-      }
-    }
-  });
-
-
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const usuario = JSON.parse(localStorage.getItem("smartlib_usuario"));
-    const userInfo = document.getElementById("user-info");
-
-    if (usuario && userInfo) {
-      const fotoSalva = localStorage.getItem("smartlib_fotoPerfil");
-
-      userInfo.innerHTML = `
-        <img src="${fotoSalva || "https://i.pravatar.cc/150?u=" + usuario.usuario}" alt="Foto do usuário" id="foto-perfil" />
-        <span>${usuario.tipo.charAt(0).toUpperCase() + usuario.tipo.slice(1)}</span>
-        <div class="menu-dropdown" id="menu-dropdown">
-          <button onclick="logout()">🚪 Sair</button>
-          <label style="font-size: 0.9em; color: gray;">📷 Mudar Foto
-            <input type="file" id="input-foto-perfil" accept="image/*" style="display: none;">
-          </label>
-        </div>
-      `;
-
-      // Toggle do menu
-      userInfo.addEventListener("click", () => {
-        const menu = document.getElementById("menu-dropdown");
-        menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-      });
-
-      // Upload de nova imagem
-      document.getElementById("input-foto-perfil").addEventListener("change", e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          const url = event.target.result;
-          localStorage.setItem("smartlib_fotoPerfil", url);
-          document.getElementById("foto-perfil").src = url;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  });
-
-  function logout() {
-    localStorage.removeItem("smartlib_usuario");
-    window.location.href = "login.html";
-  }
-</script>
-
-<button id="btnTopo" title="Voltar ao topo">⭡</button>
-<script>
-const btnTopo = document.getElementById("btnTopo");
-
-// Exibe o botão ao rolar mais de 200px da página
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 200) {
-    btnTopo.style.display = "block";
-  } else {
-    btnTopo.style.display = "none";
-  }
-});
-
-// Ao clicar, rola suavemente para o topo
-btnTopo.addEventListener("click", () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-});
-</script>
+<script src="index.js"></script>
 
 </body>
 </html>

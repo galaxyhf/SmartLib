@@ -52,45 +52,52 @@
     <button onclick="window.location.href='login.html'">Ir para Login</button>
   </div>
 
-  
-<script>
-  document.getElementById('cadastroForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+  <script>
+    document.getElementById('cadastroForm').addEventListener('submit', function (event) {
+      event.preventDefault();
 
-    const nome = document.getElementById('nome').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const usuario = document.getElementById('usuario').value.trim();
-    const senha = document.getElementById('senha').value;
-    const confirmar = document.getElementById('confirmar').value;
-    const tipo = document.getElementById('tipo').value;
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const usuario = document.getElementById('usuario').value.trim();
+      const senha = document.getElementById('senha').value;
+      const confirmar = document.getElementById('confirmar').value;
+      const tipo = document.getElementById('tipo').value;
 
-    if (senha !== confirmar) {
-      alert("As senhas não coincidem!");
-      return;
-    }
+      if (senha !== confirmar) {
+        alert("As senhas não coincidem!");
+        return;
+      }
 
-    if (!tipo) {
-      alert("Selecione o tipo de conta!");
-      return;
-    }
+      if (!tipo) {
+        alert("Selecione o tipo de conta!");
+        return;
+      }
 
-    const novoUsuario = { nome, email, usuario, senha, tipo };
+      const novoUsuario = { nome, email, usuario, senha };
 
-    let usuarios = JSON.parse(localStorage.getItem("smartlib_usuarios")) || [];
+      const endpoint = tipo === "cliente"
+              ? "http://localhost:3000/cadastro/cliente"
+              : "http://localhost:3000/cadastro/funcionario";
 
-    const usuarioExistente = usuarios.find(u => u.usuario === usuario);
-    if (usuarioExistente) {
-      alert("Este nome de usuário já está em uso.");
-      return;
-    }
-
-    usuarios.push(novoUsuario);
-    localStorage.setItem("smartlib_usuarios", JSON.stringify(usuarios));
-
-    alert("✅ Cadastro realizado com sucesso!");
-    window.location.href = "login.html";
-  });
-</script>
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(novoUsuario)
+      })
+              .then(res => res.json())
+              .then(data => {
+                if (data.erro) {
+                  alert("Erro: " + data.erro);
+                } else {
+                  alert("✅ Cadastro realizado com sucesso!");
+                  window.location.href = "login.html";
+                }
+              })
+              .catch(() => {
+                alert("Erro ao conectar com o servidor.");
+              });
+    });
+  </script>
 
 </body>
 </html>

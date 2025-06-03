@@ -1,70 +1,40 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - SmartLib</title>
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="tela-login">
-  <div class="form-container">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="username">Usuário</label>
-        <input type="text" id="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Senha</label>
-        <input type="password" id="password" required />
-      </div>
-      <button type="submit">Entrar</button>
-      <p class="forgot-password">
-        <a href="forgot-password.html">Esqueci minha senha</a>
-      </p>
-      <p class="form-footer">Não tem conta? <a href="cadastro-usuario.html">Cadastre-se</a></p>
-      <p id="error-message" class="erro">Usuário ou senha inválidos.</p>
-    </form>
-  </div>
-  <script>
-    const usuariosFixos = [
-      { usuario: "cliente",     senha: "123", tipo: "cliente"    },
-      { usuario: "funcionario", senha: "123", tipo: "funcionario" }
-    ];
-  
-    document.getElementById('loginForm').addEventListener('submit', event => {
-      event.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const errorMessage = document.getElementById('error-message');
-  
-      // 1) Puxa também os cadastrados
-      const cadastrados = JSON.parse(localStorage.getItem("smartlib_usuarios")) || [];
-      // 2) Junta tudo
-      const todosUsuarios = usuariosFixos.concat(cadastrados);
-  
-      // 3) Valida credenciais
-      const usuarioEncontrado = todosUsuarios.find(
-        u => u.usuario === username && u.senha === password
-      );
-  
-      if (!usuarioEncontrado) {
-        errorMessage.style.display = "block";
-        return;
-      }
-  
-      // 4) Grava sessão com o mesmo nome usado no logout/index
-      localStorage.setItem(
-        "smartlib_usuario",
-        JSON.stringify(usuarioEncontrado)
-      );
-  
-      // 5) Vai pra home
-      window.location.href = "index.html";
-    });
-  </script>
-  
+<div class="form-container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="usuario">Usuário</label>
+      <input type="text" id="usuario" required />
+    </div>
+    <div class="form-group">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" required />
+    </div>
+    <div class="form-group">
+      <label for="tipo">Tipo de Conta</label>
+      <select id="tipo" required>
+        <option value="">Selecione</option>
+        <option value="cliente">Cliente</option>
+        <option value="funcionario">Funcionário</option>
+      </select>
+    </div>
+    <button type="submit">Entrar</button>
+    <p class="forgot-password">
+      <a href="forgot-password.html">Esqueci minha senha</a>
+    </p>
+    <p class="form-footer">Não tem conta? <a href="cadastro-usuario.html">Cadastre-se</a></p>
+    <p id="error-message" class="erro" style="display: none;">Usuário ou senha inválidos.</p>
+  </form>
+</div>
+
+<script src="login.js"></script>
 </body>
 </html>
